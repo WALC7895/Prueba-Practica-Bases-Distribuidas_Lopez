@@ -1,0 +1,95 @@
+ Instalar MySQL y PostgreSQL
+
+Para MySQL
+
+# 1. Actualiza los repositorios 
+sudo apt update 
+  
+# 2. Instala los paquetes necesarios para trabajar con repositorios HTTPS 
+sudo apt install wget lsb-release gnupg -y 
+  
+# 3. Agrega el repositorio oficial de MySQL 
+wget https://dev.mysql.com/get/mysql-apt-config_0.8.29-1_all.deb 
+  
+# 4. Instala el repositorio descargado 
+sudo dpkg -i mysql-apt-config_0.8.29-1_all.deb 
+  
+# 5. Vuelve a actualizar los repositorios (ahora con los de MySQL) 
+sudo apt update 
+  
+# 6. Instala MySQL Server 
+sudo apt install mysql-server -y 
+  
+# Verifica que el servicio esté activo 
+sudo systemctl status mysql 
+
+Para Postgres
+
+sudo apt update
+sudo apt install -y postgresql postgresql-contrib
+sudo systemctl enable --now postgresql
+
+Instalar SymmetricDS en ambas
+
+wget https://github.com/JumpMind/symmetric-ds/releases/download/3.13.19/symmetric-server-3.13.19.zip
+unzip symmetric-server-3.13.19.zip -d symmetric
+
+Crea archivos de configuración:
+
+En mysql /symmetric/engines/mysql.properties:
+
+engine.name=mysql-eng
+db.driver=com.mysql.cj.jdbc.Driver
+db.url=jdbc:mysql://localhost:3306/CentroMedicoDB
+db.user=root
+db.password=
+group.id=mysql-pg
+external.id=SRC
+sync.url=http://IPmysql:31415/sync/mysql-eng
+
+En postgres /symmetric/engines/postgres.properties:
+
+engine.name=pg-eng
+db.driver=org.postgresql.Driver
+db.url=jdbc:postgresql://localhost:5432/centromedico
+db.user=postgres
+db.password=
+group.id=mysql-pg
+external.id=DST
+sync.url=http://IPpg:31415/sync/pg-eng
+registration.url=http://IPmysql:31415/sync/mysql-eng
+
+Define tabla de replicación en MySQL:
+
+USE CentroMedicoDB;
+CREATE TABLE prueba_hetero(id INT PRIMARY KEY AUTO_INCREMENT, msg VARCHAR(50));
+
+En mysql-src/symmetric, inicia:
+
+./sym_service start
+
+En postgres-dst/symmetric, inicia:
+
+./sym_service start
+
+Desde postgres-dst:
+
+./symadmin --engine pg-eng open-registration
+
+En mysql-src:
+
+./symadmin --engine mysql-eng register-node --registration-url http://IPpg:31415 --engine-id pg-eng
+
+Revisa nodos:
+
+./symadmin --engine mysql-eng list-sessions
+./symadmin --engine pg-eng list-sessions
+
+Prueba final
+En MySQL:
+
+INSERT INTO prueba_hetero(msg) VALUES('hola hetero');
+
+En PostgreSQL:
+
+SELECT * FROM prueba_hetero

@@ -1,0 +1,18 @@
+Configurar Transaccional
+
+Instala la característica File Server (servidor de archivos) en el sistema operativo Windows Server.
+
+	Install-WindowsFeature -Name FS-FileServer  
+
+Crear y compartir carpeta para replicación
+
+	New-SmbShare -Name "ReplData" -Path "C:\ReplData" -FullAccess "Everyone"  
+
+Configurar el distribuidor de replicación en SQL Server
+
+	# Ejecutar en SSMS  
+	$sql = @"  
+	EXEC sp_adddistributor @distributor = N'$(hostname)'  
+	EXEC sp_adddistributiondb @database = N'distribution'  
+	"@  	
+	Invoke-SqlCmd -Query $sql  

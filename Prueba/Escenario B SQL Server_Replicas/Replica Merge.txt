@@ -1,0 +1,35 @@
+-- Configurar replicación merge  
+
+Crear una publicación de replicación merge llamada Merge_Pub
+
+EXEC sp_addmergepublication   
+  @publication = N'Merge_Pub',  
+  @sync_mode = N'native';  
+
+Agregar una tabla como artículo a la publicación merge que creamos antes.
+
+EXEC sp_addmergearticle   
+  @publication = N'Merge_Pub',   
+  @article = N'TablaMerge',  
+  @source_object = N'TablaMerge';  
+
+
+Detalles:
+
+sp_addmergepublication: Procedimiento almacenado del sistema que define una publicación merge (es decir, el conjunto de artículos que serán replicados).
+
+@publication = N'Merge_Pub': Define el nombre de la publicación.
+
+@sync_mode = N'native': Define el modo de sincronización.
+
+"native" significa que se usará la sincronización directa con los mecanismos internos de SQL Server.
+
+Esto puede implicar distribuidores locales o remotos que hacen de intermediarios entre el publicador y el suscriptor.
+
+sp_addmergearticle: Procedimiento almacenado para agregar un artículo (tabla, vista, función, etc.) a una publicación merge.
+
+@publication = N'Merge_Pub': Se refiere a la publicación que ya se definió.
+
+@article = N'TablaMerge': Define el nombre del artículo (puede ser distinto del nombre real de la tabla, aunque aquí es igual).
+
+@source_object = N'TablaMerge': Especifica el nombre de la tabla real en la base de datos que será replicada.

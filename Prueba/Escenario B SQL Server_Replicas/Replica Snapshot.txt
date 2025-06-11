@@ -1,0 +1,34 @@
+Configurar Snapshot
+
+Crear publicación de snapshot llamada Snapshot_Pub
+
+EXEC sp_addpublication   
+  @publication = N'Snapshot_Pub',   
+  @sync_method = N'native',  
+  @repl_freq = N'snapshot';  
+
+Agrega una tabla a la publicación Snapshot_Pub para que sea replicada.
+
+EXEC sp_addarticle   
+  @publication = N'Snapshot_Pub',   
+  @article = N'TablaPrueba',   
+  @source_object = N'TablaPrueba';  
+
+
+Detalles:
+
+sp_addpublication: procedimiento almacenado para definir una publicación de replicación.
+
+@publication = N'Snapshot_Pub': el nombre que le asignamos a la publicación.
+
+@sync_method = N'native': indica que se usará la sincronización interna de SQL Server.
+
+@repl_freq = N'snapshot': especifica que la frecuencia de replicación es por instantánea, es decir, cada vez que se genera un snapshot, se distribuye todo.
+
+sp_addarticle: procedimiento que registra un objeto (tabla, vista, procedimiento) dentro de una publicación.
+
+@publication = N'Snapshot_Pub': indica a qué publicación pertenece el artículo.
+
+@article = N'TablaPrueba': nombre que tendrá el artículo dentro de la replicación (puede ser distinto del objeto real, pero aquí es igual).
+
+@source_object = N'TablaPrueba': nombre de la tabla real que será replicada.

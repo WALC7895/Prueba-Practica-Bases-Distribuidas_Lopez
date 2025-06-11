@@ -1,0 +1,51 @@
+Script de configuración para cada nodo de MySQL
+
+Se lo necesita para habilitar y preparar MySQL Group Replication en cada nodo de un clúster.
+
+server-id                          = N    # 1,2,3
+
+"Activa el uso de GTIDs (Global Transaction Identifiers), necesarios para que la replicación sea consistente y confiable."
+
+gtid_mode                         = ON
+enforce_gtid_consistency         = ON
+
+"Cambia la persistencia de la información de replicación (master y relay log info) de archivo a tabla en el diccionario de datos."
+
+master_info_repository            = TABLE
+relay_log_info_repository         = TABLE
+
+"Group Replication requiere esta opción en NONE para evitar problemas de compatibilidad."
+
+binlog_checksum                   = NONE
+
+"Permite que el nodo registre en su propio binlog las actualizaciones que recibe de otros nodos."
+
+log_slave_updates                 = ON
+transaction_write_set_extraction  = XXHASH64
+plugin_load_add                   = group_replication.so
+transaction_read_only             = OFF
+
+"ndica que no se inicie automáticamente la replicación grupal al arrancar MySQL."
+
+group_replication_group_name      = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+group_replication_start_on_boot   = OFF
+group_replication_local_address   = "IPnodoN:24901"
+group_replication_group_seeds     = "IP1:24901,IP2:24901,IP3:24901"
+
+
+script completo:
+
+server-id                          = N    # 1,2,3
+gtid_mode                         = ON
+enforce_gtid_consistency         = ON
+master_info_repository            = TABLE
+relay_log_info_repository         = TABLE
+binlog_checksum                   = NONE
+log_slave_updates                 = ON
+transaction_write_set_extraction  = XXHASH64
+plugin_load_add                   = group_replication.so
+transaction_read_only             = OFF
+group_replication_group_name      = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+group_replication_start_on_boot   = OFF
+group_replication_local_address   = "IPnodoN:24901"
+group_replication_group_seeds     = "IP1:24901,IP2:24901,IP3:24901"

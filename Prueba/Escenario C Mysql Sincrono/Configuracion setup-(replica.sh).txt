@@ -1,0 +1,30 @@
+Script de reinicio y configuración de las replicas
+
+• Reiniciar el servicio MySQL en cada nodo
+sudo systemctl restart MySQL
+
+• En nodo 1, abri MySQL Shell para conectarme como usuario root:
+mysqlsh root@IP1:3306
+
+• Luego en modo JS:
+dba.createCluster('miCluster');
+
+• En nodos 2 y 3, El IPnodo2 o IPnodo3 debe coincidir con lo especificado en group_replication_group_seeds
+
+mysqlsh root@IPnodo2:3306
+var cluster = dba.getCluster();
+cluster.addInstance('root@IPnodo2:3306');
+
+• Verificar estado En cualquier nodo:
+mysqlsh root@IP1:3306 -- dba.getCluster().status()
+
+
+Script completo:
+
+sudo systemctl restart mysql
+mysqlsh root@IP1:3306
+dba.createCluster('miCluster');
+mysqlsh root@IPnodo2:3306
+var cluster = dba.getCluster();
+cluster.addInstance('root@IPnodo2:3306');
+mysqlsh root@IP1:3306 -- dba.getCluster().status()

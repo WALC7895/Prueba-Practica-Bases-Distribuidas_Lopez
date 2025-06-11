@@ -1,0 +1,9 @@
+#!/bin/bash  
+for i in {1..10}; do  
+  START=$(date +%s%3N)  
+  mysql -u root -p -e "INSERT INTO centro_medico.pruebas (mensaje) VALUES ('Test $i');"  
+  END=$(date +%s%3N)  
+  LATENCY=$((END - START))  
+  echo "Inserción $i: $LATENCY ms" | tee -a latencia.log  
+  sleep 1  
+done  

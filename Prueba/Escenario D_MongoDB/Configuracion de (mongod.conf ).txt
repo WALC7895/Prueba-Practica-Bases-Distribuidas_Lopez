@@ -1,0 +1,47 @@
+en cada instancia de VM de mongo hay que instalar mongo para ello se usa los siguientes comandos:
+
+wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
+echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+
+sudo apt update
+
+sudo apt install -y mongodb-org
+
+Para configurar e iniciar el servicio de mongod es la siguiente configuración dentro del archivo mongod.conf
+
+sudo nano /etc/mongod.conf
+
+net:
+  bindIp: 0.0.0.0
+  port: 27017
+replication:
+  replSetName: "rsCloud"
+
+Y se debe reiniciar el servicio 
+
+sudo systemctl restart mongod
+
+en el Mongo-primary hay que modificar el propmt con los siguientes comandos
+
+mongo --host IPprimario:27017
+
+rs.initiate({
+  _id: "rsCloud",
+  members: [
+    { _id: 0, host: "IPprimario:27017" },
+    { _id: 1, host: "IPsecundario:27017" },
+    { _id: 2, host: "IParbiter:27017", arbiterOnly: true }
+  ]
+});
+rs.status();
+
+Ahora para las pruebas con los comandos:
+
+Insertar en mongo Primario
+
+use test; db.messages.insert({text:"hello"});
+
+Insertar en mongo Secondary
+
+mongo --host IPsecundario:27017 --eval "db.getMongo().setReadPref('secondary'); db.messages.find().pretty()"
+

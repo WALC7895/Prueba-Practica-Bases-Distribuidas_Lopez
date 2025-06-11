@@ -1,0 +1,26 @@
+Prueba de conexión 
+
+Nos conectamos a nodo1:
+
+mysql -u root -p -h IP1 
+
+Se crea la base de datos y tabla en Nodo 1
+
+CREATE DATABASE testSync;
+USE testSync;
+CREATE TABLE t1(id INT PRIMARY KEY AUTO_INCREMENT, msg VARCHAR(50));
+
+INSERT INTO t1(msg) VALUES('sync');
+ mysql -u root -p -h IP2 -e "SELECT * FROM testSync.t1;"
+
+1.CREATE DATABASE testSync;: crea una nueva base de datos llamada testSync.
+
+2. USE testSync;: selecciona la base para trabajar.
+
+3. CREATE TABLE t1(...): crea una tabla simple con una columna id autoincremental y una columna msg.
+
+4. INSERT INTO t1(msg) VALUES('sync');: inserta una fila de prueba con el texto 'sync'.
+
+Verificar replicación desde Nodo 2, conectandonos al nodo 2 (IP2) usando el cliente mysql de línea de comandos para mostrar el contenido de la tabla t1 en la base de datos testSync.
+
+mysql -u root -p -h IP2 -e "SELECT * FROM testSync.t1;"

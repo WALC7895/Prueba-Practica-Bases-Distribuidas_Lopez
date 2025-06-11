@@ -1,0 +1,44 @@
+Scripts para la configuración de la base de datos en MySQL 
+
+# 1. Actualiza los repositorios 
+sudo apt update 
+  
+# 2. Instala los paquetes necesarios para trabajar con repositorios HTTPS 
+sudo apt install wget lsb-release gnupg -y 
+  
+# 3. Agrega el repositorio oficial de MySQL 
+wget https://dev.mysql.com/get/mysql-apt-config_0.8.29-1_all.deb 
+  
+# 4. Instala el repositorio descargado 
+sudo dpkg -i mysql-apt-config_0.8.29-1_all.deb 
+  
+# 5. Vuelve a actualizar los repositorios (ahora con los de MySQL) 
+sudo apt update 
+  
+# 6. Instala MySQL Server 
+sudo apt install mysql-server -y 
+  
+# Verifica que el servicio esté activo 
+sudo systemctl status mysql 
+  
+sudo mysql -u root -p 
+
+Script de la creación de la BD para el esclavo:
+
+CREATE DATABASE CentroMedicoDB;
+CHANGE MASTER TO
+  MASTER_HOST='10.128.0.4',
+  MASTER_USER='replicador',
+  MASTER_PASSWORD='R3plica!2024',
+  MASTER_LOG_FILE='mysql-bin.000001',
+  MASTER_LOG_POS=154;
+START SLAVE;
+SHOW SLAVE STATUS\G;
+
+Script de configuración del archivo mysqld
+
+[mysqld]  
+server-id = 2  
+relay_log = /var/log/mysql/mysql-relay-bin.log  
+read_only = ON  
+skip_slave_start = OFF   
